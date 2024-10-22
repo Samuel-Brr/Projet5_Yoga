@@ -13,7 +13,7 @@ import { UserService } from 'src/app/services/user.service';
 import { MeComponent } from './me.component';
 import {User} from "../../interfaces/user.interface";
 
-fdescribe('MeComponent', () => {
+describe('MeComponent', () => {
   let component: MeComponent;
   let fixture: ComponentFixture<MeComponent>;
   let mockUserService: jest.Mocked<UserService>;
