@@ -47,11 +47,15 @@ export class DetailComponent implements OnInit {
   public delete(): void {
     this.sessionApiService
       .delete(this.sessionId)
-      .subscribe((_: any) => {
+      .subscribe({
+        next: () => {
           this.matSnackBar.open('Session deleted !', 'Close', { duration: 3000 });
           this.router.navigate(['sessions']);
+        },
+        error: () => {
+          this.matSnackBar.open('Failed to delete session!', 'Close', { duration: 3000 });
         }
-      );
+      });
   }
 
   public participate(): void {
