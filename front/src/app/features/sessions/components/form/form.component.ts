@@ -52,11 +52,21 @@ export class FormComponent implements OnInit {
     if (!this.onUpdate) {
       this.sessionApiService
         .create(session)
-        .subscribe((_: Session) => this.exitPage('Session created !'));
+        .subscribe({
+          next: () => this.exitPage('Session created !'),
+          error: () => {
+            this.matSnackBar.open('Failed to create session', 'Close', { duration: 3000 });
+          }
+        });
     } else {
       this.sessionApiService
         .update(this.id!, session)
-        .subscribe((_: Session) => this.exitPage('Session updated !'));
+        .subscribe({
+          next: () => this.exitPage('Session updated !'),
+          error: () => {
+            this.matSnackBar.open('Failed to update session', 'Close', { duration: 3000 });
+          }
+        });
     }
   }
 
@@ -78,7 +88,7 @@ export class FormComponent implements OnInit {
         session ? session.description : '',
         [
           Validators.required,
-          Validators.max(2000)
+          Validators.maxLength(2000)
         ]
       ],
     });
