@@ -66,7 +66,10 @@
               "sourceMap": true,
               "namedChunks": true
             },
-            "e2e": {
+            "coverage": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
@@ -79,9 +82,9 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "project-name:build",
+            "browserTarget": "yoga:build",
             "proxyConfig": "src/proxy.config.json"
           },
           "configurations": {
@@ -90,6 +93,9 @@
             },
             "development": {
               "browserTarget": "yoga:build:development"
+            },
+            "coverage": {
+              "browserTarget": "yoga:build:coverage"
             }
           },
           "defaultConfiguration": "development"
@@ -123,7 +129,7 @@
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "yoga:serve"
+            "devServerTarget": "yoga:serve:coverage"
           },
           "configurations": {
             "production": {
@@ -141,13 +147,13 @@
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "yoga:serve-coverage",
+            "devServerTarget": "yoga:serve:coverage",
             "watch": true,
             "headless": false
           },
           "configurations": {
             "production": {
-              "devServerTarget": "yoga:serve-coverage:production"
+              "devServerTarget": "yoga:serve:production"
             }
           }
         },

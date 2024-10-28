@@ -38,7 +38,7 @@ describe('Authentication', () => {
     cy.interceptLoginSuccess(true);
     cy.login('user@example.com', 'password123');
     cy.logout();
-    cy.url().should('eq', Cypress.config().baseUrl);
+    cy.url().should('match', /^http:\/\/localhost:4200\/?$/);
     cy.get('[data-testid=login-link]').should('be.visible');
   });
 });

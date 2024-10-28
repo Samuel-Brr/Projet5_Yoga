@@ -29,7 +29,7 @@ describe('User Account', () => {
       cy.get('[data-testid=delete-button]').click();
 
       cy.wait('@deleteAccount');
-      cy.url().should('eq', Cypress.config().baseUrl);
+      cy.url().should('match', /^http:\/\/localhost:4200\/?$/);
       cy.get('[data-testid=login-link]').should('be.visible');
     });
   });

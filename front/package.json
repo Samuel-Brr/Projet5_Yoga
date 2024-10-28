@@ -6,9 +6,14 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "ng lint",
+    "start:coverage": "ng serve --configuration=coverage",
+    "cy:coverage": "cypress run",
+    "precoverage": "rimraf .nyc_output coverage",
+    "coverage": "start-server-and-test start:coverage http://localhost:4200 cy:coverage",
+    "postcoverage": "nyc report --reporter=lcov --reporter=html --reporter=text-summary",
     "e2e": "ng e2e",
     "e2e:ci": "ng run yoga:e2e-ci",
-    "e2e:coverage": "npx nyc report --reporter=lcov --reporter=text-summary",
+    "e2e:coverage": "npm run coverage && npm run postcoverage",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },
@@ -30,8 +35,8 @@
     "zone.js": "0.11.8"
   },
   "devDependencies": {
-    "@angular-builders/jest": "14.0.1",
     "@angular-builders/custom-webpack": "^14.0.1",
+    "@angular-builders/jest": "14.0.1",
     "@angular-devkit/build-angular": "14.2.1",
     "@angular-eslint/builder": "14.0.3",
     "@angular-eslint/eslint-plugin": "14.0.3",
@@ -43,7 +48,7 @@
     "@briebug/jest-schematic": "4.0.0",
     "@cypress/code-coverage": "3.10.0",
     "@cypress/schematic": "2.0.3",
-    "@istanbuljs/nyc-config-typescript": "1.0.2",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@jsdevtools/coverage-istanbul-loader": "3.0.5",
     "@types/jest": "28.1.3",
     "@typescript-eslint/eslint-plugin": "5.35.1",
@@ -55,6 +60,8 @@
     "jest-html-reporter": "3.6.0",
     "jest-marbles": "3.0.3",
     "nyc": "15.1.0",
+    "rimraf": "^6.0.1",
+    "start-server-and-test": "^2.0.8",
     "typescript": "4.7.4",
     "webpack": "5.74.0"
   }
