@@ -1,4 +1,4 @@
-<div class="list">
+<div class="list" data-testid="user-menu">
   <mat-card>
     <mat-card-header fxLayout="row" fxLayoutAlign="space-between center">
       <mat-card-title class="m0">Rentals available</mat-card-title>
@@ -8,7 +8,7 @@
       </button>
     </mat-card-header>
     <div class="items mt2" fxLayout="row wrap" fxLayout.lt-md="column">
-      <mat-card class="item" *ngFor="let session of (sessions$ | async)" fxFlex>
+      <mat-card class="item" *ngFor="let session of (sessions$ | async); let i = index" fxFlex>
         <mat-card-header>
           <mat-card-title>{{ session.name }}</mat-card-title>
           <mat-card-subtitle>
@@ -24,7 +24,7 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="primary" [routerLink]="['detail',session.id]">
+          <button mat-raised-button color="primary" [routerLink]="['detail',session.id]" data-testid="detail-button">
             <mat-icon>search</mat-icon>
             <span class="ml1">Detail</span>
           </button>

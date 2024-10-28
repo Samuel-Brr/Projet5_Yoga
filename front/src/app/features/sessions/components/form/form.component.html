@@ -22,7 +22,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Teacher</mat-label>
           <mat-select ngDefaultControl formControlName="teacher_id">
-            <mat-option *ngFor="let teacher of teachers$ | async" [value]="teacher.id">
+            <mat-option *ngFor="let teacher of teachers$ | async; let i = index" [value]="teacher.id">
               {{teacher.firstName}} {{teacher.lastName}}
             </mat-option>
           </mat-select>
@@ -32,7 +32,7 @@
           <textarea matInput rows="8" formControlName="description"></textarea>
         </mat-form-field>
         <div fxLayout="row" fxLayoutAlign="center center">
-          <button mat-raised-button color="primary" type="submit" [disabled]="sessionForm.invalid">
+          <button mat-raised-button color="primary" type="submit" [disabled]="sessionForm.invalid" data-testid="save-session-button">
             Save
           </button>
         </div>

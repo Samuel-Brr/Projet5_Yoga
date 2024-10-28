@@ -6,7 +6,7 @@
           <button mat-icon-button (click)="back()">
             <mat-icon>arrow_back</mat-icon>
           </button>
-          <h1>{{session.name | titlecase}}</h1>
+          <h1 data-testid="session-name">{{session.name | titlecase}}</h1>
         </div>
         <div>
           <button *ngIf="isAdmin" mat-raised-button color="warn" data-testid="delete-button" (click)="delete()">
@@ -29,7 +29,7 @@
         </div>
       </div>
     </mat-card-title>
-    <mat-card-subtitle *ngIf="teacher">
+    <mat-card-subtitle *ngIf="teacher" data-testid="session-teacher">
       <div fxLayoutAlign="start center" class="ml3">
         <mat-icon>
           people
@@ -55,7 +55,7 @@
           <span class="ml1">{{ session.date | date: 'longDate'}}</span>
         </div>
       </div>
-      <div class="description">
+      <div class="description" data-testid="session-description">
         <p>Description:</p>
         {{ session.description }}
         <br>
