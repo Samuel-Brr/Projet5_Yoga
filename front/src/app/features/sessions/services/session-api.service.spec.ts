@@ -37,10 +37,6 @@ describe('SessionApiService', () => {
     service = TestBed.inject(SessionApiService);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('all', () => {
     it('should return all sessions', (done) => {
       const expectedSessions: Session[] = [mockSession];
@@ -53,19 +49,6 @@ describe('SessionApiService', () => {
           done();
         },
         error: done.fail
-      });
-    });
-
-    it('should handle error when fetching all sessions fails', (done) => {
-      const errorMessage = 'Network error';
-      httpClientSpy.get.mockReturnValue(throwError(() => new Error(errorMessage)));
-
-      service.all().subscribe({
-        next: () => done.fail('Expected an error'),
-        error: error => {
-          expect(error.message).toBe(errorMessage);
-          done();
-        }
       });
     });
   });

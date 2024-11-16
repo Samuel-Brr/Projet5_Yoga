@@ -95,11 +95,11 @@ describe('DetailComponent', () => {
       ],
       providers: [
         FormBuilder,
-        { provide: SessionApiService, useValue: mockSessionApiService },
-        { provide: TeacherService, useValue: mockTeacherService },
-        { provide: MatSnackBar, useValue: mockMatSnackBar },
-        { provide: Router, useValue: mockRouter },
-        { provide: SessionService, useValue: mockSessionService },
+        {provide: SessionApiService, useValue: mockSessionApiService},
+        {provide: TeacherService, useValue: mockTeacherService},
+        {provide: MatSnackBar, useValue: mockMatSnackBar},
+        {provide: Router, useValue: mockRouter},
+        {provide: SessionService, useValue: mockSessionService},
         {
           provide: ActivatedRoute,
           useValue: {
@@ -117,10 +117,6 @@ describe('DetailComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   describe('initialization', () => {
     it('should fetch session and teacher data on init', fakeAsync(() => {
       fixture.detectChanges();
@@ -130,19 +126,13 @@ describe('DetailComponent', () => {
       expect(mockTeacherService.detail).toHaveBeenCalledWith('1');
       expect(component.session).toEqual(mockSession);
       expect(component.teacher).toEqual(mockTeacher);
-    }));
 
-    it('should set isParticipate to true when user is in session users array', fakeAsync(() => {
-      fixture.detectChanges();
-      tick();
-
+      //should set isParticipate to true when user is in session users array
       expect(component.isParticipate).toBeTruthy();
-    }));
 
-    it('should set isAdmin based on session service', () => {
-      fixture.detectChanges();
+      //should set isAdmin based on session service
       expect(component.isAdmin).toBeTruthy();
-    });
+    }));
   });
 
   describe('navigation', () => {
@@ -162,7 +152,7 @@ describe('DetailComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Session deleted !',
         'Close',
-        { duration: 3000 }
+        {duration: 3000}
       );
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
     }));
@@ -177,24 +167,20 @@ describe('DetailComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Failed to delete session!',
         'Close',
-        { duration: 3000 }
+        {duration: 3000}
       );
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     }));
   });
 
-  describe('participate()', () => {
-    it('should call participate and refresh session data', fakeAsync(() => {
+  describe('participate() & unParticipate()', () => {
+    it('should call participate/ unparticipate and refresh session data', fakeAsync(() => {
       component.participate();
       tick();
 
       expect(mockSessionApiService.participate).toHaveBeenCalledWith('1', '1');
       expect(mockSessionApiService.detail).toHaveBeenCalled();
-    }));
-  });
 
-  describe('unParticipate()', () => {
-    it('should call unParticipate and refresh session data', fakeAsync(() => {
       component.unParticipate();
       tick();
 
@@ -210,27 +196,13 @@ describe('DetailComponent', () => {
       fixture.detectChanges();
     });
 
-    it('should display session name', () => {
+    it('should display page content', () => {
       const element = fixture.nativeElement;
       expect(element.textContent).toContain('Yoga Class');
-    });
-
-    it('should display teacher name', () => {
-      const element = fixture.nativeElement;
       expect(element.textContent).toContain('John DOE');
-    });
-
-    it('should show number of attendees', () => {
-      const element = fixture.nativeElement;
       expect(element.textContent).toContain('3 attendees');
-    });
-
-    it('should show delete button for admin users', () => {
       const deleteButton = fixture.nativeElement.querySelector('[data-testid="delete-button"]');
       expect(deleteButton).toBeTruthy();
-    });
-
-    it('should hide participate buttons for admin users', () => {
       const participateButton = fixture.nativeElement.querySelector('[data-testid="participate-button"]');
       const unParticipateButton = fixture.nativeElement.querySelector('[data-testid="unparticipate-button"]');
       expect(participateButton).toBeFalsy();

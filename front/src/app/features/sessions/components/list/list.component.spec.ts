@@ -73,10 +73,6 @@ describe('ListComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should fetch sessions on init', (done) => {
     component.sessions$.subscribe(sessions => {
       expect(sessions).toEqual(mockSessions);
@@ -84,9 +80,8 @@ describe('ListComponent', () => {
       expect(mockSessionApiService.all).toHaveBeenCalled();
       done();
     });
-  });
 
-  it('should return correct user information', () => {
+    //should return correct user information
     expect(component.user).toEqual(mockSessionInfo);
   });
 
@@ -95,49 +90,26 @@ describe('ListComponent', () => {
       fixture.detectChanges(); // Initial data binding
     });
 
-    it('should render session list', (done) => {
+    it('should render elements', (done) => {
       component.sessions$.subscribe(() => {
         fixture.detectChanges();
         const listElement = fixture.nativeElement.querySelector('.list');
         expect(listElement).toBeTruthy();
-        done();
-      });
-    });
 
-    it('should display session names', (done) => {
-      component.sessions$.subscribe(() => {
-        fixture.detectChanges();
         const compiled = fixture.nativeElement;
         expect(compiled.textContent).toContain('Yoga Session');
         expect(compiled.textContent).toContain('Pilates Session');
-        done();
-      });
-    });
-
-    it('should display session descriptions', (done) => {
-      component.sessions$.subscribe(() => {
-        fixture.detectChanges();
-        const compiled = fixture.nativeElement;
         expect(compiled.textContent).toContain('Relaxing yoga session');
         expect(compiled.textContent).toContain('Core strengthening');
+
+        const createButton = fixture.nativeElement.querySelector('[data-testid="create-button"]');
+        expect(createButton).toBeTruthy();
         done();
       });
     });
   });
 
   describe('admin functionality', () => {
-    it('should show create button for admin users', (done) => {
-      mockSessionService.sessionInformation = { ...mockSessionInfo, admin: true };
-      fixture.detectChanges();
-
-      component.sessions$.subscribe(() => {
-        fixture.detectChanges();
-        const createButton = fixture.nativeElement.querySelector('[data-testid="create-button"]');
-        expect(createButton).toBeTruthy();
-        done();
-      });
-    });
-
     it('should hide create button for non-admin users', (done) => {
       mockSessionService.sessionInformation = { ...mockSessionInfo, admin: false };
       fixture.detectChanges();

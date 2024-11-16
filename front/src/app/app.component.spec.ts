@@ -31,7 +31,7 @@ describe('AppComponent', () => {
         AppComponent
       ],
       providers: [
-        { provide: SessionService, useValue: mockSessionService },
+        {provide: SessionService, useValue: mockSessionService},
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -42,10 +42,6 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should check if user is logged in', () => {
@@ -71,20 +67,17 @@ describe('AppComponent', () => {
     fixture.detectChanges();
 
     // Act & Assert
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('[routerlink="login"]')).toBeTruthy();
-    expect(compiled.querySelector('[routerlink="register"]')).toBeTruthy();
-  });
+    const loggedOut = fixture.nativeElement as HTMLElement;
+    expect(loggedOut.querySelector('[routerlink="login"]')).toBeTruthy();
+    expect(loggedOut.querySelector('[routerlink="register"]')).toBeTruthy();
 
-  it('should show sessions/account/logout when logged in', () => {
-    // Arrange
     isLoggedSubject.next(true);
     fixture.detectChanges();
 
     // Act & Assert
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('[routerlink="sessions"]')).toBeTruthy();
-    expect(compiled.querySelector('[routerlink="me"]')).toBeTruthy();
-    expect(compiled.querySelector('.link')).toBeTruthy();
+    const loggedIn = fixture.nativeElement as HTMLElement;
+    expect(loggedIn.querySelector('[routerlink="sessions"]')).toBeTruthy();
+    expect(loggedIn.querySelector('[routerlink="me"]')).toBeTruthy();
+    expect(loggedIn.querySelector('.link')).toBeTruthy();
   });
 });

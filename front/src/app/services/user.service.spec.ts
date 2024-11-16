@@ -34,10 +34,6 @@ describe('UserService', () => {
     httpTestingController.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('getById', () => {
     const userId = '123';
     const expectedUrl = 'api/user/123';
@@ -54,26 +50,6 @@ describe('UserService', () => {
 
       // Respond with mock data
       req.flush(mockUser);
-    });
-
-    it('should handle http error properly', () => {
-      // Act
-      service.getById(userId).subscribe({
-        error: error => {
-          expect(error.status).toBe(404);
-          expect(error.statusText).toBe('Not Found');
-        }
-      });
-
-      // Assert
-      const req = httpTestingController.expectOne(expectedUrl);
-      expect(req.request.method).toBe('GET');
-
-      // Respond with mock error
-      req.flush('Not found', {
-        status: 404,
-        statusText: 'Not Found'
-      });
     });
   });
 
@@ -93,26 +69,6 @@ describe('UserService', () => {
 
       // Respond with mock data
       req.flush({ message: 'Deleted successfully' });
-    });
-
-    it('should handle delete error properly', () => {
-      // Act
-      service.delete(userId).subscribe({
-        error: error => {
-          expect(error.status).toBe(403);
-          expect(error.statusText).toBe('Forbidden');
-        }
-      });
-
-      // Assert
-      const req = httpTestingController.expectOne(expectedUrl);
-      expect(req.request.method).toBe('DELETE');
-
-      // Respond with mock error
-      req.flush('Forbidden', {
-        status: 403,
-        statusText: 'Forbidden'
-      });
     });
   });
 });

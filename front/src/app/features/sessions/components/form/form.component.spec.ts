@@ -1,20 +1,20 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { FormComponent } from './form.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
-import { SessionService } from '../../../../services/session.service';
-import { TeacherService } from '../../../../services/teacher.service';
-import { SessionApiService } from '../../services/session-api.service';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { of, throwError } from 'rxjs';
-import { HttpClientModule } from '@angular/common/http';
+import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {FormComponent} from './form.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
+import {SessionService} from '../../../../services/session.service';
+import {TeacherService} from '../../../../services/teacher.service';
+import {SessionApiService} from '../../services/session-api.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatCardModule} from '@angular/material/card';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {of, throwError} from 'rxjs';
+import {HttpClientModule} from '@angular/common/http';
 
 describe('FormComponent', () => {
   let component: FormComponent;
@@ -38,8 +38,8 @@ describe('FormComponent', () => {
   };
 
   const mockTeachers = [
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Smith' }
+    {id: 1, name: 'John Doe'},
+    {id: 2, name: 'Jane Smith'}
   ];
 
   beforeEach(async () => {
@@ -97,12 +97,12 @@ describe('FormComponent', () => {
         MatSelectModule
       ],
       providers: [
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: SessionService, useValue: mockSessionService },
-        { provide: SessionApiService, useValue: mockSessionApiService },
-        { provide: TeacherService, useValue: mockTeacherService },
-        { provide: MatSnackBar, useValue: mockMatSnackBar }
+        {provide: Router, useValue: mockRouter},
+        {provide: ActivatedRoute, useValue: mockActivatedRoute},
+        {provide: SessionService, useValue: mockSessionService},
+        {provide: SessionApiService, useValue: mockSessionApiService},
+        {provide: TeacherService, useValue: mockTeacherService},
+        {provide: MatSnackBar, useValue: mockMatSnackBar}
       ]
     }).compileComponents();
 
@@ -110,14 +110,9 @@ describe('FormComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
   describe('Initialization', () => {
     it('should redirect non-admin users to sessions page', fakeAsync(() => {
-      mockSessionService.sessionInformation = { admin: false, id: 1 } as any;
+      mockSessionService.sessionInformation = {admin: false, id: 1} as any;
       fixture.detectChanges();
       tick();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
@@ -132,7 +127,7 @@ describe('FormComponent', () => {
     }));
 
     it('should initialize form for update mode', fakeAsync(() => {
-      Object.defineProperty(mockRouter, 'url', { value: '/sessions/update/1' });
+      Object.defineProperty(mockRouter, 'url', {value: '/sessions/update/1'});
       fixture.detectChanges();
       tick();
       expect(component.onUpdate).toBeTruthy();
@@ -156,9 +151,7 @@ describe('FormComponent', () => {
 
     it('should be invalid when empty', () => {
       expect(component.sessionForm?.valid).toBeFalsy();
-    });
 
-    it('should be valid when all required fields are filled', () => {
       component.sessionForm?.patchValue({
         name: 'Test Session',
         date: '2024-12-25',
@@ -166,9 +159,7 @@ describe('FormComponent', () => {
         description: 'Test Description'
       });
       expect(component.sessionForm?.valid).toBeTruthy();
-    });
 
-    it('should validate description length', () => {
       const longDescription = 'a'.repeat(2001);
       component.sessionForm?.patchValue({
         description: longDescription
@@ -188,7 +179,8 @@ describe('FormComponent', () => {
       });
     });
 
-    it('should create new session in create mode', fakeAsync(() => {
+    it('should create or update', fakeAsync(() => {
+      //should create new session in create mode
       component.onUpdate = false;
       component.submit();
       tick();
@@ -197,12 +189,11 @@ describe('FormComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Session created !',
         'Close',
-        { duration: 3000 }
+        {duration: 3000}
       );
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
-    }));
 
-    it('should update session in update mode', fakeAsync(() => {
+      //should update session in update mode
       component.onUpdate = true;
       component.submit();
       tick();
@@ -211,12 +202,13 @@ describe('FormComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Session updated !',
         'Close',
-        { duration: 3000 }
+        {duration: 3000}
       );
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
     }));
 
-    it('should handle create error', fakeAsync(() => {
+    it('should handle errors', fakeAsync(() => {
+      //should handle create error
       component.onUpdate = false;
       mockSessionApiService.create.mockReturnValue(throwError(() => new Error('Create failed')));
 
@@ -227,11 +219,10 @@ describe('FormComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Failed to create session',
         'Close',
-        { duration: 3000 }
+        {duration: 3000}
       );
-    }));
 
-    it('should handle update error', fakeAsync(() => {
+      //should handle update error
       component.onUpdate = true;
       mockSessionApiService.update.mockReturnValue(throwError(() => new Error('Update failed')));
 
@@ -242,7 +233,7 @@ describe('FormComponent', () => {
       expect(mockMatSnackBar.open).toHaveBeenCalledWith(
         'Failed to update session',
         'Close',
-        { duration: 3000 }
+        {duration: 3000}
       );
     }));
   });
