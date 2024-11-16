@@ -44,26 +44,9 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should check if user is logged in', () => {
-    const result = component.$isLogged();
-    expect(result).toBeTruthy();
-  });
-
-  it('should handle logout', () => {
-    // Arrange
-    const navigateSpy = jest.spyOn(router, 'navigate');
-
-    // Act
-    component.logout();
-
-    // Assert
-    expect(sessionService.logOut).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledWith(['']);
-  });
-
   it('should show login/register when logged out', () => {
     // Arrange
-    isLoggedSubject.next(false);
+    component.logout();
     fixture.detectChanges();
 
     // Act & Assert

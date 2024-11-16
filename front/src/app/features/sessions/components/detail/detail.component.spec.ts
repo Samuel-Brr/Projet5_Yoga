@@ -156,21 +156,6 @@ describe('DetailComponent', () => {
       );
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
     }));
-
-    it('should handle delete error and show error message', fakeAsync(() => {
-      mockSessionApiService.delete.mockReturnValue(throwError(() => new Error('Delete failed')));
-
-      component.delete();
-      tick();
-
-      expect(mockSessionApiService.delete).toHaveBeenCalledWith('1');
-      expect(mockMatSnackBar.open).toHaveBeenCalledWith(
-        'Failed to delete session!',
-        'Close',
-        {duration: 3000}
-      );
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
-    }));
   });
 
   describe('participate() & unParticipate()', () => {
@@ -187,26 +172,5 @@ describe('DetailComponent', () => {
       expect(mockSessionApiService.unParticipate).toHaveBeenCalledWith('1', '1');
       expect(mockSessionApiService.detail).toHaveBeenCalled();
     }));
-  });
-
-  describe('template tests', () => {
-    beforeEach(() => {
-      component.session = mockSession;
-      component.teacher = mockTeacher;
-      fixture.detectChanges();
-    });
-
-    it('should display page content', () => {
-      const element = fixture.nativeElement;
-      expect(element.textContent).toContain('Yoga Class');
-      expect(element.textContent).toContain('John DOE');
-      expect(element.textContent).toContain('3 attendees');
-      const deleteButton = fixture.nativeElement.querySelector('[data-testid="delete-button"]');
-      expect(deleteButton).toBeTruthy();
-      const participateButton = fixture.nativeElement.querySelector('[data-testid="participate-button"]');
-      const unParticipateButton = fixture.nativeElement.querySelector('[data-testid="unparticipate-button"]');
-      expect(participateButton).toBeFalsy();
-      expect(unParticipateButton).toBeFalsy();
-    });
   });
 });

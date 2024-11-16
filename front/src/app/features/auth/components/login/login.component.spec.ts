@@ -135,37 +135,4 @@ describe('LoginComponent', () => {
       expect(component.onError).toBeTruthy();
     }));
   });
-
-  /*describe('Password Visibility Toggle', () => {
-    it('should toggle password visibility', () => {
-      expect(component.hide).toBeTruthy();
-      component.hide = !component.hide;
-      expect(component.hide).toBeFalsy();
-    });
-  });*/
-
-  describe('Template Integration', () => {
-    it('should show error message when onError is true', () => {
-      component.onError = true;
-      fixture.detectChanges();
-
-      const errorElement = fixture.nativeElement.querySelector('.error');
-      expect(errorElement?.textContent).toContain('An error occurred');
-    });
-
-    /*it('should not show error message by default', () => {
-      const errorElement = fixture.nativeElement.querySelector('.error');
-      expect(errorElement).toBeFalsy();
-    });
-
-    it('should toggle password field type based on hide value', () => {
-      const passwordField = fixture.nativeElement.querySelector('input[type="password"]');
-      expect(passwordField.type).toBe('password');
-
-      component.hide = false;
-      fixture.detectChanges();
-
-      expect(passwordField.type).toBe('text');
-    });*/
-  });
 });

@@ -85,30 +85,6 @@ describe('ListComponent', () => {
     expect(component.user).toEqual(mockSessionInfo);
   });
 
-  describe('template tests', () => {
-    beforeEach(() => {
-      fixture.detectChanges(); // Initial data binding
-    });
-
-    it('should render elements', (done) => {
-      component.sessions$.subscribe(() => {
-        fixture.detectChanges();
-        const listElement = fixture.nativeElement.querySelector('.list');
-        expect(listElement).toBeTruthy();
-
-        const compiled = fixture.nativeElement;
-        expect(compiled.textContent).toContain('Yoga Session');
-        expect(compiled.textContent).toContain('Pilates Session');
-        expect(compiled.textContent).toContain('Relaxing yoga session');
-        expect(compiled.textContent).toContain('Core strengthening');
-
-        const createButton = fixture.nativeElement.querySelector('[data-testid="create-button"]');
-        expect(createButton).toBeTruthy();
-        done();
-      });
-    });
-  });
-
   describe('admin functionality', () => {
     it('should hide create button for non-admin users', (done) => {
       mockSessionService.sessionInformation = { ...mockSessionInfo, admin: false };

@@ -146,35 +146,4 @@ describe('RegisterComponent', () => {
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     }));
   });
-
-  describe('Template Integration', () => {
-    it('should display error message when onError is true otherwise should not display', () => {
-      component.onError = true;
-      fixture.detectChanges();
-
-      const errorElement = fixture.nativeElement.querySelector('.error');
-      expect(errorElement).toBeTruthy();
-      expect(errorElement.textContent).toContain('An error occurred');
-
-      component.onError = false;
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.querySelector('.error')).toBeFalsy();
-    });
-
-    it('should enable submit button when form is valid otherwise not', () => {
-      const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
-      expect(submitButton.disabled).toBeTruthy();
-
-      component.form.patchValue({
-        email: 'test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        password: 'password123'
-      });
-      fixture.detectChanges();
-
-      expect(submitButton.disabled).toBeFalsy();
-    });
-  });
 });

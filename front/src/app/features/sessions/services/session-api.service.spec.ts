@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { SessionApiService } from './session-api.service';
 import { Session } from '../interfaces/session.interface';
 
@@ -37,122 +37,80 @@ describe('SessionApiService', () => {
     service = TestBed.inject(SessionApiService);
   });
 
-  describe('all', () => {
-    it('should return all sessions', (done) => {
-      const expectedSessions: Session[] = [mockSession];
-      httpClientSpy.get.mockReturnValue(of(expectedSessions));
+  it('should handle all session operations', (done) => {
+    // Setup test data
+    const sessionId = '1';
+    const userId = '2';
+    const updatedSession = { ...mockSession, name: 'Updated Yoga Class' };
+    const newSession = { ...mockSession };
+    delete newSession.id;
 
-      service.all().subscribe({
-        next: sessions => {
-          expect(sessions).toEqual(expectedSessions);
-          expect(httpClientSpy.get).toHaveBeenCalledWith('api/session');
-          done();
-        },
-        error: done.fail
-      });
-    });
-  });
+    // Mock HTTP responses
+    httpClientSpy.get
+      .mockReturnValueOnce(of([mockSession])) // for all()
+      .mockReturnValueOnce(of(mockSession));  // for detail()
+    httpClientSpy.post
+      .mockReturnValueOnce(of(mockSession))   // for create()
+      .mockReturnValueOnce(of(void 0));       // for participate()
+    httpClientSpy.put.mockReturnValue(of(updatedSession));
+    httpClientSpy.delete
+      .mockReturnValueOnce(of({}))            // for delete()
+      .mockReturnValueOnce(of(void 0));       // for unParticipate()
 
-  describe('detail', () => {
-    it('should return a single session', (done) => {
-      httpClientSpy.get.mockReturnValue(of(mockSession));
-      const sessionId = '1';
+    // Test 1: Get all sessions
+    service.all().subscribe(sessions => {
+      expect(sessions).toEqual([mockSession]);
+      expect(httpClientSpy.get).toHaveBeenCalledWith('api/session');
 
-      service.detail(sessionId).subscribe({
-        next: session => {
-          expect(session).toEqual(mockSession);
-          expect(httpClientSpy.get).toHaveBeenCalledWith(`api/session/${sessionId}`);
-          done();
-        },
-        error: done.fail
-      });
-    });
-  });
+      // Test 2: Get session detail
+      service.detail(sessionId).subscribe(session => {
+        expect(session).toEqual(mockSession);
+        expect(httpClientSpy.get).toHaveBeenCalledWith(`api/session/${sessionId}`);
 
-  describe('delete', () => {
-    it('should delete a session', (done) => {
-      const sessionId = '1';
-      httpClientSpy.delete.mockReturnValue(of({}));
-
-      service.delete(sessionId).subscribe({
-        next: response => {
-          expect(response).toEqual({});
-          expect(httpClientSpy.delete).toHaveBeenCalledWith(`api/session/${sessionId}`);
-          done();
-        },
-        error: done.fail
-      });
-    });
-  });
-
-  describe('create', () => {
-    it('should create a new session', (done) => {
-      const newSession: Session = { ...mockSession };
-      delete newSession.id;
-      httpClientSpy.post.mockReturnValue(of(mockSession));
-
-      service.create(newSession).subscribe({
-        next: session => {
-          expect(session).toEqual(mockSession);
+        // Test 3: Create new session
+        service.create(newSession).subscribe(createdSession => {
+          expect(createdSession).toEqual(mockSession);
           expect(httpClientSpy.post).toHaveBeenCalledWith('api/session', newSession);
-          done();
-        },
-        error: done.fail
-      });
-    });
+
+          // Test 4: Update session
+          service.update(sessionId, updatedSession).subscribe(updated => {
+            expect(updated).toEqual(updatedSession);
+            expect(httpClientSpy.put).toHaveBeenCalledWith(`api/session/${sessionId}`, updatedSession);
+
+            // Test 5: Delete session
+            service.delete(sessionId).subscribe(response => {
+              expect(response).toEqual({});
+              expect(httpClientSpy.delete).toHaveBeenCalledWith(`api/session/${sessionId}`);
+
+              // Test 6: Participate in session
+              service.participate(sessionId, userId).subscribe(() => {
+                expect(httpClientSpy.post).toHaveBeenCalledWith(
+                  `api/session/${sessionId}/participate/${userId}`,
+                  null
+                );
+
+                // Test 7: Unparticipate from session
+                service.unParticipate(sessionId, userId).subscribe(() => {
+                  expect(httpClientSpy.delete).toHaveBeenCalledWith(
+                    `api/session/${sessionId}/participate/${userId}`
+                  );
+
+                  // All tests complete
+                  done();
+                }, done.fail);
+              }, done.fail);
+            }, done.fail);
+          }, done.fail);
+        }, done.fail);
+      }, done.fail);
+    }, done.fail);
   });
 
-  describe('update', () => {
-    it('should update an existing session', (done) => {
-      const sessionId = '1';
-      const updatedSession: Session = { ...mockSession, name: 'Updated Yoga Class' };
-      httpClientSpy.put.mockReturnValue(of(updatedSession));
-
-      service.update(sessionId, updatedSession).subscribe({
-        next: session => {
-          expect(session).toEqual(updatedSession);
-          expect(httpClientSpy.put).toHaveBeenCalledWith(`api/session/${sessionId}`, updatedSession);
-          done();
-        },
-        error: done.fail
-      });
-    });
-  });
-
-  describe('participate', () => {
-    it('should add user participation to session', (done) => {
-      const sessionId = '1';
-      const userId = '2';
-      httpClientSpy.post.mockReturnValue(of(void 0));
-
-      service.participate(sessionId, userId).subscribe({
-        next: () => {
-          expect(httpClientSpy.post).toHaveBeenCalledWith(
-            `api/session/${sessionId}/participate/${userId}`,
-            null
-          );
-          done();
-        },
-        error: done.fail
-      });
-    });
-  });
-
-  describe('unParticipate', () => {
-    it('should remove user participation from session', (done) => {
-      const sessionId = '1';
-      const userId = '2';
-      httpClientSpy.delete.mockReturnValue(of(void 0));
-
-      service.unParticipate(sessionId, userId).subscribe({
-        next: () => {
-          expect(httpClientSpy.delete).toHaveBeenCalledWith(
-            `api/session/${sessionId}/participate/${userId}`
-          );
-          done();
-        },
-        error: done.fail
-      });
-    });
+  // Verify spy calls counts
+  afterEach(() => {
+    expect(httpClientSpy.get).toHaveBeenCalledTimes(2);  // all() and detail()
+    expect(httpClientSpy.post).toHaveBeenCalledTimes(2); // create() and participate()
+    expect(httpClientSpy.put).toHaveBeenCalledTimes(1);  // update()
+    expect(httpClientSpy.delete).toHaveBeenCalledTimes(2); // delete() and unParticipate()
   });
 });

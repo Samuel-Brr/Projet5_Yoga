@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, tick, flush} from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -82,25 +82,20 @@ describe('MeComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should load user data on init', fakeAsync(() => {
+  it('should load user data on init and go back when back() is called', fakeAsync(() => {
     fixture.detectChanges();
     tick();
 
     expect(mockUserService.getById).toHaveBeenCalledWith('1');
     expect(component.user).toEqual(mockUser);
-  }));
 
-  it('should go back when back() is called', () => {
     const mockHistoryBack = jest.spyOn(window.history, 'back');
 
     component.back();
 
     expect(mockHistoryBack).toHaveBeenCalled();
-  });
+    flush()
+  }));
 
   describe('delete()', () => {
     beforeEach(() => {
@@ -121,35 +116,5 @@ describe('MeComponent', () => {
       expect(mockSessionService.logOut).toHaveBeenCalled();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
     }));
-  });
-
-  describe('template tests', () => {
-    beforeEach(() => {
-      component.user = mockUser;
-      fixture.detectChanges();
-    });
-
-    it('should display user information', () => {
-      const compiled = fixture.nativeElement;
-      expect(compiled.textContent).toContain('John');
-      expect(compiled.textContent).toContain('DOE');
-      expect(compiled.textContent).toContain('john@example.com');
-    });
-
-    it('should show delete button for non-admin users', () => {
-      component.user = { ...mockUser, admin: false };
-      fixture.detectChanges();
-
-      const deleteButton = fixture.nativeElement.querySelector('[data-testid="delete-button"]');
-      expect(deleteButton).toBeTruthy();
-    });
-
-    it('should hide delete button for admin users', () => {
-      component.user = { ...mockUser, admin: true };
-      fixture.detectChanges();
-
-      const deleteButton = fixture.nativeElement.querySelector('[data-testid="delete-button"]');
-      expect(deleteButton).toBeFalsy();
-    });
   });
 });

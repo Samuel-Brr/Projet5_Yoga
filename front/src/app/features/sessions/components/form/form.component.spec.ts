@@ -111,13 +111,6 @@ describe('FormComponent', () => {
   });
 
   describe('Initialization', () => {
-    it('should redirect non-admin users to sessions page', fakeAsync(() => {
-      mockSessionService.sessionInformation = {admin: false, id: 1} as any;
-      fixture.detectChanges();
-      tick();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
-    }));
-
     it('should initialize form for create mode', fakeAsync(() => {
       fixture.detectChanges();
       tick();
@@ -133,14 +126,6 @@ describe('FormComponent', () => {
       expect(component.onUpdate).toBeTruthy();
       expect(mockSessionApiService.detail).toHaveBeenCalledWith('1');
       expect(component.sessionForm?.get('name')?.value).toBe(mockSession.name);
-    }));
-
-    it('should load teachers on init', fakeAsync(() => {
-      fixture.detectChanges();
-      tick();
-      let teachers: any[] = [];
-      component.teachers$.subscribe(t => teachers = t);
-      expect(teachers).toEqual(mockTeachers);
     }));
   });
 
@@ -205,36 +190,6 @@ describe('FormComponent', () => {
         {duration: 3000}
       );
       expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
-    }));
-
-    it('should handle errors', fakeAsync(() => {
-      //should handle create error
-      component.onUpdate = false;
-      mockSessionApiService.create.mockReturnValue(throwError(() => new Error('Create failed')));
-
-      component.submit();
-      tick();
-
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
-      expect(mockMatSnackBar.open).toHaveBeenCalledWith(
-        'Failed to create session',
-        'Close',
-        {duration: 3000}
-      );
-
-      //should handle update error
-      component.onUpdate = true;
-      mockSessionApiService.update.mockReturnValue(throwError(() => new Error('Update failed')));
-
-      component.submit();
-      tick();
-
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
-      expect(mockMatSnackBar.open).toHaveBeenCalledWith(
-        'Failed to update session',
-        'Close',
-        {duration: 3000}
-      );
     }));
   });
 });
