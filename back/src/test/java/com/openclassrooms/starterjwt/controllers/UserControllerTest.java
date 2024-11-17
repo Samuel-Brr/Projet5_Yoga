@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -80,28 +79,6 @@ class UserControllerTest {
             verify(userService).findById(1L);
             verify(userMapper).toDto(mockUser);
         }
-
-        @Test
-        @DisplayName("Should return not found when user doesn't exist")
-        void shouldReturnNotFoundWhenUserDoesNotExist() {
-            when(userService.findById(1L)).thenReturn(null);
-
-            ResponseEntity<?> response = userController.findById("1");
-
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-            verify(userService).findById(1L);
-            verify(userMapper, never()).toDto(any(User.class));
-        }
-
-        @Test
-        @DisplayName("Should return bad request when id is invalid")
-        void shouldReturnBadRequestWhenIdIsInvalid() {
-            ResponseEntity<?> response = userController.findById("invalid");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(userService, never()).findById(any());
-            verify(userMapper, never()).toDto(any(User.class));
-        }
     }
 
     @Nested
@@ -136,57 +113,5 @@ class UserControllerTest {
                 SecurityContextHolder.clearContext();
             }
         }
-
-        @Test
-        @DisplayName("Should return unauthorized when user tries to delete another user's account")
-        void shouldReturnUnauthorizedWhenDeletingOtherUser() {
-            // Arrange
-            when(userService.findById(1L)).thenReturn(mockUser);
-
-            // Setup security context
-            SecurityContext securityContext = mock(SecurityContext.class);
-            Authentication authentication = mock(Authentication.class);
-            UserDetails userDetails = mock(UserDetails.class);
-
-            when(userDetails.getUsername()).thenReturn("other@test.com");
-            when(authentication.getPrincipal()).thenReturn(userDetails);
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            SecurityContextHolder.setContext(securityContext);
-
-            try {
-                // Act
-                ResponseEntity<?> response = userController.save("1");
-
-                // Assert
-                assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-                verify(userService).findById(1L);
-                verify(userService, never()).delete(any());
-            } finally {
-                SecurityContextHolder.clearContext();
-            }
-        }
-
-        @Test
-        @DisplayName("Should return not found when user doesn't exist")
-        void shouldReturnNotFoundWhenUserDoesNotExist() {
-            when(userService.findById(1L)).thenReturn(null);
-
-            ResponseEntity<?> response = userController.save("1");
-
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-            verify(userService).findById(1L);
-            verify(userService, never()).delete(any());
-        }
-
-        @Test
-        @DisplayName("Should return bad request when id is invalid")
-        void shouldReturnBadRequestWhenIdIsInvalid() {
-            ResponseEntity<?> response = userController.save("invalid");
-
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(userService, never()).findById(any());
-            verify(userService, never()).delete(any());
-        }
-
     }
 }

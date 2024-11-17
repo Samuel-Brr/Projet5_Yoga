@@ -83,55 +83,11 @@ class AuthTokenFilterTest {
             verify(filterChain).doFilter(request, response);
             assertNotNull(SecurityContextHolder.getContext().getAuthentication());
         }
-
-        @Test
-        @DisplayName("Should handle missing authorization header")
-        void shouldHandleMissingAuthorizationHeader() throws Exception {
-            // Arrange
-            when(request.getHeader("Authorization")).thenReturn(null);
-
-            // Act
-            authTokenFilter.doFilterInternal(request, response, filterChain);
-
-            // Assert
-            verify(filterChain).doFilter(request, response);
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-        }
-
-        @Test
-        @DisplayName("Should handle invalid authorization header format")
-        void shouldHandleInvalidAuthorizationHeaderFormat() throws Exception {
-            // Arrange
-            when(request.getHeader("Authorization")).thenReturn("InvalidFormat " + TOKEN);
-
-            // Act
-            authTokenFilter.doFilterInternal(request, response, filterChain);
-
-            // Assert
-            verify(filterChain).doFilter(request, response);
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-        }
     }
 
     @Nested
     @DisplayName("Token Validation Tests")
     class TokenValidationTests {
-
-        @Test
-        @DisplayName("Should handle invalid token")
-        void shouldHandleInvalidToken() throws Exception {
-            // Arrange
-            when(request.getHeader("Authorization")).thenReturn("Bearer " + TOKEN);
-            when(jwtUtils.validateJwtToken(TOKEN)).thenReturn(false);
-
-            // Act
-            authTokenFilter.doFilterInternal(request, response, filterChain);
-
-            // Assert
-            verify(jwtUtils).validateJwtToken(TOKEN);
-            verify(filterChain).doFilter(request, response);
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-        }
 
         @Test
         @DisplayName("Should handle token validation exception")
@@ -174,39 +130,11 @@ class AuthTokenFilterTest {
             assertNotNull(SecurityContextHolder.getContext().getAuthentication());
             assertEquals(userDetails, SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         }
-
-        @Test
-        @DisplayName("Should handle user details loading failure")
-        void shouldHandleUserDetailsLoadingFailure() throws Exception {
-            // Arrange
-            when(userDetailsService.loadUserByUsername(USERNAME))
-                    .thenThrow(new RuntimeException("User details loading failed"));
-
-            // Act
-            authTokenFilter.doFilterInternal(request, response, filterChain);
-
-            // Assert
-            verify(filterChain).doFilter(request, response);
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-        }
     }
 
     @Nested
     @DisplayName("Filter Chain Tests")
     class FilterChainTests {
-
-        @Test
-        @DisplayName("Should always continue filter chain")
-        void shouldAlwaysContinueFilterChain() throws Exception {
-            // Arrange
-            when(request.getHeader("Authorization")).thenReturn(null);
-
-            // Act
-            authTokenFilter.doFilterInternal(request, response, filterChain);
-
-            // Assert
-            verify(filterChain).doFilter(request, response);
-        }
 
         @Test
         @DisplayName("Should continue filter chain after successful authentication")

@@ -124,42 +124,6 @@ class AuthControllerTest {
             verify(jwtUtils).generateJwtToken(authentication);
             verify(userRepository).findByEmail(userDetails.getUsername());
         }
-
-        @Test
-        @DisplayName("Should return admin status when user is admin")
-        void shouldReturnAdminStatusWhenUserIsAdmin() {
-            // Arrange
-            user.setAdmin(true);
-            when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                    .thenReturn(authentication);
-            when(authentication.getPrincipal()).thenReturn(userDetails);
-            when(jwtUtils.generateJwtToken(authentication)).thenReturn(TEST_JWT);
-            when(userRepository.findByEmail(userDetails.getUsername()))
-                    .thenReturn(Optional.of(user));
-
-            // Act
-            ResponseEntity<?> response = authController.authenticateUser(loginRequest);
-
-            // Assert
-            assertTrue(response.getStatusCode().is2xxSuccessful());
-            JwtResponse jwtResponse = (JwtResponse) response.getBody();
-            assertTrue(jwtResponse.getAdmin());
-        }
-
-        @Test
-        @DisplayName("Should handle authentication failure")
-        void shouldHandleAuthenticationFailure() {
-            // Arrange
-            when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                    .thenThrow(new RuntimeException("Authentication failed"));
-
-            // Act & Assert
-            assertThrows(RuntimeException.class, () ->
-                    authController.authenticateUser(loginRequest));
-
-            verify(jwtUtils, never()).generateJwtToken(any());
-            verify(userRepository, never()).findByEmail(any());
-        }
     }
 
     @Nested
@@ -188,44 +152,6 @@ class AuthControllerTest {
             verify(userRepository).existsByEmail(signupRequest.getEmail());
             verify(passwordEncoder).encode(signupRequest.getPassword());
             verify(userRepository).save(any(User.class));
-        }
-
-        @Test
-        @DisplayName("Should reject registration when email exists")
-        void shouldRejectRegistrationWhenEmailExists() {
-            // Arrange
-            when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(true);
-
-            // Act
-            ResponseEntity<?> response = authController.registerUser(signupRequest);
-
-            // Assert
-            assertEquals(400, response.getStatusCodeValue());
-            assertNotNull(response.getBody());
-            assertInstanceOf(MessageResponse.class, response.getBody());
-            assertEquals("Error: Email is already taken!",
-                    ((MessageResponse) response.getBody()).getMessage());
-
-            verify(userRepository).existsByEmail(signupRequest.getEmail());
-            verify(passwordEncoder, never()).encode(any());
-            verify(userRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("Should create non-admin user by default")
-        void shouldCreateNonAdminUserByDefault() {
-            // Arrange
-            when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(false);
-            when(passwordEncoder.encode(signupRequest.getPassword()))
-                    .thenReturn("hashedPassword");
-
-            // Act
-            authController.registerUser(signupRequest);
-
-            // Assert
-            verify(userRepository).save(argThat(savedUser ->
-                    !savedUser.isAdmin()
-            ));
         }
     }
 

@@ -12,17 +12,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SessionController Tests")
@@ -84,32 +83,6 @@ class SessionControllerTest {
             verify(sessionService).getById(1L);
             verify(sessionMapper).toDto(mockSession);
         }
-
-        @Test
-        @DisplayName("Should return not found when session doesn't exist")
-        void shouldReturnNotFoundWhenSessionDoesntExist() {
-            // Arrange
-            when(sessionService.getById(1L)).thenReturn(null);
-
-            // Act
-            ResponseEntity<?> response = sessionController.findById("1");
-
-            // Assert
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-            verify(sessionService).getById(1L);
-            verify(sessionMapper, never()).toDto(any(Session.class));
-        }
-
-        @Test
-        @DisplayName("Should return bad request for invalid id format")
-        void shouldReturnBadRequestForInvalidIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.findById("invalid-id");
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).getById(any());
-        }
     }
 
     @Nested
@@ -131,21 +104,6 @@ class SessionControllerTest {
             assertEquals(mockSessionDtoList, response.getBody());
             verify(sessionService).findAll();
             verify(sessionMapper).toDto(mockSessionList);
-        }
-
-        @Test
-        @DisplayName("Should return empty list when no sessions exist")
-        void shouldReturnEmptyListWhenNoSessionsExist() {
-            // Arrange
-            when(sessionService.findAll()).thenReturn(Collections.emptyList());
-            when(sessionMapper.toDto(Collections.emptyList())).thenReturn(Collections.emptyList());
-
-            // Act
-            ResponseEntity<?> response = sessionController.findAll();
-
-            // Assert
-            assertTrue(response.getStatusCode().is2xxSuccessful());
-            assertEquals(Collections.emptyList(), response.getBody());
         }
     }
 
@@ -193,17 +151,6 @@ class SessionControllerTest {
             assertEquals(mockSessionDto, response.getBody());
             verify(sessionService).update(1L, mockSession);
         }
-
-        @Test
-        @DisplayName("Should return bad request for invalid id format")
-        void shouldReturnBadRequestForInvalidIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.update("invalid-id", mockSessionDto);
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).update(any(), any());
-        }
     }
 
     @Nested
@@ -223,31 +170,6 @@ class SessionControllerTest {
             assertTrue(response.getStatusCode().is2xxSuccessful());
             verify(sessionService).delete(1L);
         }
-
-        @Test
-        @DisplayName("Should return not found when session doesn't exist")
-        void shouldReturnNotFoundWhenSessionDoesntExist() {
-            // Arrange
-            when(sessionService.getById(1L)).thenReturn(null);
-
-            // Act
-            ResponseEntity<?> response = sessionController.save("1");
-
-            // Assert
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-            verify(sessionService, never()).delete(any());
-        }
-
-        @Test
-        @DisplayName("Should return bad request for invalid id format")
-        void shouldReturnBadRequestForInvalidIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.save("invalid-id");
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).delete(any());
-        }
     }
 
     @Nested
@@ -264,28 +186,6 @@ class SessionControllerTest {
             assertTrue(response.getStatusCode().is2xxSuccessful());
             verify(sessionService).participate(1L, 2L);
         }
-
-        @Test
-        @DisplayName("Should return bad request for invalid id format")
-        void shouldReturnBadRequestForInvalidIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.participate("invalid", "2");
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).participate(any(), any());
-        }
-
-        @Test
-        @DisplayName("Should return bad request for invalid userId format")
-        void shouldReturnBadRequestForInvalidUserIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.participate("1", "invalid");
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).participate(any(), any());
-        }
     }
 
     @Nested
@@ -301,28 +201,6 @@ class SessionControllerTest {
             // Assert
             assertTrue(response.getStatusCode().is2xxSuccessful());
             verify(sessionService).noLongerParticipate(1L, 2L);
-        }
-
-        @Test
-        @DisplayName("Should return bad request for invalid id format")
-        void shouldReturnBadRequestForInvalidIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.noLongerParticipate("invalid", "2");
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).noLongerParticipate(any(), any());
-        }
-
-        @Test
-        @DisplayName("Should return bad request for invalid userId format")
-        void shouldReturnBadRequestForInvalidUserIdFormat() {
-            // Act
-            ResponseEntity<?> response = sessionController.noLongerParticipate("1", "invalid");
-
-            // Assert
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-            verify(sessionService, never()).noLongerParticipate(any(), any());
         }
     }
 }

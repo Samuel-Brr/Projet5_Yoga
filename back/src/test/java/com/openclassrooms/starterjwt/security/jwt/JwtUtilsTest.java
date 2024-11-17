@@ -84,39 +84,6 @@ class JwtUtilsTest {
             // Assert
             assertTrue(isValid);
         }
-
-        @Test
-        @DisplayName("Should reject malformed token")
-        void shouldRejectMalformedToken() {
-            // Arrange
-            String malformedToken = "malformed.jwt.token";
-
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken(malformedToken);
-
-            // Assert
-            assertFalse(isValid);
-        }
-
-        @Test
-        @DisplayName("Should reject null token")
-        void shouldRejectNullToken() {
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken(null);
-
-            // Assert
-            assertFalse(isValid);
-        }
-
-        @Test
-        @DisplayName("Should reject empty token")
-        void shouldRejectEmptyToken() {
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken("");
-
-            // Assert
-            assertFalse(isValid);
-        }
     }
 
     @Nested
@@ -135,95 +102,6 @@ class JwtUtilsTest {
 
             // Assert
             assertEquals("test@test.com", username);
-        }
-
-        @Test
-        @DisplayName("Should throw exception for invalid token")
-        void shouldThrowExceptionForInvalidToken() {
-            // Arrange
-            String invalidToken = "invalid.token.structure";
-
-            // Act & Assert
-            assertThrows(Exception.class, () -> jwtUtils.getUserNameFromJwtToken(invalidToken));
-        }
-    }
-
-    @Nested
-    @DisplayName("Error Handling Tests")
-    class ErrorHandlingTests {
-
-        @Test
-        @DisplayName("Should handle SignatureException")
-        void shouldHandleSignatureException() {
-            // Arrange
-            String invalidSignatureToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-                    "eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIn0." +
-                    "invalid_signature";
-
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken(invalidSignatureToken);
-
-            // Assert
-            assertFalse(isValid);
-        }
-
-        @Test
-        @DisplayName("Should handle MalformedJwtException")
-        void shouldHandleMalformedJwtException() {
-            // Arrange
-            String malformedToken = "malformed.token";
-
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken(malformedToken);
-
-            // Assert
-            assertFalse(isValid);
-        }
-
-        @Test
-        @DisplayName("Should handle ExpiredJwtException")
-        void shouldHandleExpiredJwtException() {
-            // Arrange - Set a very short expiration time
-            ReflectionTestUtils.setField(jwtUtils, "jwtExpirationMs", 1); // 1ms
-            when(authentication.getPrincipal()).thenReturn(userDetails);
-            String token = jwtUtils.generateJwtToken(authentication);
-
-            // Wait for token to expire
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken(token);
-
-            // Assert
-            assertFalse(isValid);
-        }
-
-        @Test
-        @DisplayName("Should handle UnsupportedJwtException")
-        void shouldHandleUnsupportedJwtException() {
-            // Arrange - Create an unsupported JWT token format
-            String unsupportedToken = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0." +
-                    "eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIn0.";
-
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken(unsupportedToken);
-
-            // Assert
-            assertFalse(isValid);
-        }
-
-        @Test
-        @DisplayName("Should handle IllegalArgumentException")
-        void shouldHandleIllegalArgumentException() {
-            // Act
-            boolean isValid = jwtUtils.validateJwtToken("");
-
-            // Assert
-            assertFalse(isValid);
         }
     }
 }

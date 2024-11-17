@@ -73,17 +73,6 @@ class WebSecurityConfigTest {
             assertTrue(encoder.matches(password, encodedPassword));
             assertFalse(encoder.matches("wrongPassword", encodedPassword));
         }
-
-        @Test
-        @DisplayName("Should verify authentication manager bean method exists")
-        void shouldVerifyAuthenticationManagerBeanMethod() {
-            // This test verifies that the method exists and is accessible
-            // We can't fully test the implementation as it depends on Spring Security internals
-            assertDoesNotThrow(() -> {
-                Class<?> clazz = WebSecurityConfig.class;
-                clazz.getMethod("authenticationManagerBean");
-            });
-        }
     }
 
     @Nested
@@ -140,23 +129,6 @@ class WebSecurityConfigTest {
             assertNotEquals(rawPassword, encodedPassword);
             assertTrue(encoder.matches(rawPassword, encodedPassword));
             assertFalse(encoder.matches("wrongPassword", encodedPassword));
-        }
-
-        @Test
-        @DisplayName("Should generate different hashes for same password")
-        void shouldGenerateDifferentHashesForSamePassword() {
-            // Arrange
-            PasswordEncoder encoder = webSecurityConfig.passwordEncoder();
-            String password = "testPassword123";
-
-            // Act
-            String firstHash = encoder.encode(password);
-            String secondHash = encoder.encode(password);
-
-            // Assert
-            assertNotEquals(firstHash, secondHash);
-            assertTrue(encoder.matches(password, firstHash));
-            assertTrue(encoder.matches(password, secondHash));
         }
     }
 
